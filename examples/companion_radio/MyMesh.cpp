@@ -741,6 +741,9 @@ MyMesh::MyMesh(mesh::Radio &radio, mesh::RNG &rng, mesh::RTCClock &rtc, SimpleMe
   _prefs.tx_power_dbm = LORA_TX_POWER;
   _prefs.gps_enabled = 0;       // GPS disabled by default
   _prefs.gps_interval = 0;      // No automatic GPS updates by default
+  #ifdef T1000_E
+    _prefs.buzzer_quiet = 1;    // T1000-E uses LED indicators instead of sounds
+  #endif
   //_prefs.rx_delay_base = 10.0f;  enable once new algo fixed
 }
 
@@ -769,6 +772,10 @@ void MyMesh::begin(bool has_display) {
 
   // load persisted prefs
   _store->loadPrefs(_prefs, sensors.node_lat, sensors.node_lon);
+  #ifdef T1000_E
+    // T1000-E uses LED indicators instead of sounds, so always suppress buzzer
+    _prefs.buzzer_quiet = 1;
+  #endif
 
   // sanitise bad pref values
   _prefs.rx_delay_base = constrain(_prefs.rx_delay_base, 0, 20.0f);
