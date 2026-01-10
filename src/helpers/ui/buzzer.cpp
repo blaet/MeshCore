@@ -1,6 +1,10 @@
 #ifdef PIN_BUZZER
 #include "buzzer.h"
 
+#ifdef T1000_E
+#include "variant.h"
+#endif
+
 void genericBuzzer::begin() {
 //    Serial.print("DBG: Setting up buzzer on pin ");
 //    Serial.println(PIN_BUZZER);
@@ -37,11 +41,36 @@ void genericBuzzer::loop() {
 }
 
 void genericBuzzer::startup() {
+#ifdef T1000_E
+    // For T1000-E, light up LED for 2 seconds instead of playing sound
+    #ifdef LED_PIN
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
+    delay(2000);
+    digitalWrite(LED_PIN, LOW);
+    #endif
+#else
     play(startup_song);
+#endif
 }
 
 void genericBuzzer::shutdown() {
+#ifdef T1000_E
+    // For T1000-E, blink LED for 2 seconds instead of playing sound
+    #ifdef LED_PIN
+    pinMode(LED_PIN, OUTPUT);
+    unsigned long start_time = millis();
+    bool led_state = false;
+    while (millis() - start_time < 2000) {
+        digitalWrite(LED_PIN, led_state ? HIGH : LOW);
+        led_state = !led_state;
+        delay(200);  // Blink every 200ms
+    }
+    digitalWrite(LED_PIN, LOW);  // Ensure LED is off at the end
+    #endif
+#else
     play(shutdown_song);
+#endif
 }
 
 void genericBuzzer::quiet(bool buzzer_state) {
