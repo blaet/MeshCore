@@ -42,11 +42,18 @@ void genericBuzzer::loop() {
 
 void genericBuzzer::startup() {
 #ifdef T1000_E
-    // For T1000-E, light up LED for 2 seconds instead of playing sound
+    // For T1000-E, use LED blink pattern instead of playing sound
+    // Double blink pattern: on-off-on (with longer final on)
     #ifdef LED_PIN
     pinMode(LED_PIN, OUTPUT);
+    // First blink
     digitalWrite(LED_PIN, HIGH);
-    delay(2000);
+    delay(300);
+    digitalWrite(LED_PIN, LOW);
+    delay(200);
+    // Second blink (longer)
+    digitalWrite(LED_PIN, HIGH);
+    delay(500);  // Longer final blink
     digitalWrite(LED_PIN, LOW);
     #endif
 #else
